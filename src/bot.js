@@ -10,8 +10,7 @@ client.on("ready", function() {
 });
 
 client.on('message', msg => {
-  if (msg.content === 'ping') {
-    msg.reply('pong');
-  }
+    if (msg.content.length == 69)
+        msg.reply("That message was a nice length ;)");
 });
 
