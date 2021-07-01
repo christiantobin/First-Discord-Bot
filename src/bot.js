@@ -19,7 +19,7 @@ client.on("ready", function() {
 
 client.on('message', msg => {
     if (msg.content.toString() == '!!help'){
-        msg.reply("\n**Commands:**\n!!rayne\n!!roulette\nOr type a question followed by \'??\'")
+        msg.reply("\n**Commands:**\n__!!rayne__ - returns a random fact.\n__!!roulette__ - a game.\nOr type a question followed by \'??\' for a response.")
     }
 })
 
