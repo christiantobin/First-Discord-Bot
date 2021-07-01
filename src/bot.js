@@ -25,16 +25,16 @@ client.on('message', msg => {
 client.on('message', msg => {
     if (msg.content.includes('??'))
     {
-        const s = getRandomInt(3)
+        const s = getRandomInt(7);
         switch(s){
-            case 1:
+            case 3:
                 msg.reply('Sure.');
                 break;
             case 2:
                 msg.reply('No.');
                 break;
-            case 3:
-                msg.reply('Yes.');
+            case 1:
+                msg.reply('Perhaps.');
                 break;
             default:
                 msg.reply('Yes.');
@@ -52,3 +52,17 @@ client.on('message', async msg => {
     }
 })
 
+client.on('message', async msg => {
+    if (msg.content.toString() == '!roulette')
+    {
+        switch (getRandomInt(5)){
+            case 0:
+                msg.reply('💥🔫 Sorry you lost.');
+                break;
+            default:
+                msg.reply('💦🔫 Whew. You\'re safe.');
+                break;
+
+        }
+    }
+})
