@@ -1,7 +1,6 @@
 const fetch = require('node-fetch');
-
+const eco = require("discord-economy");
 const dotenv = require('dotenv').config();
-
 const Discord = require("discord.js");
 const { callbackify } = require('util');
 const client = new Discord.Client();
@@ -18,17 +17,17 @@ client.on("ready", function() {
 });
 
 client.on('message', msg => {
+
+    var command = message.content.toLowerCase().slice(prefix.length).split(' ')[0];
+
     if (msg.content.toString() == '!!help'){
         msg.reply("\n**Commands:**\n__!!rayne__ - returns a random fact.\n__!!roulette__ - a game.\nOr type a question followed by \'??\' for a response.")
     }
-})
 
-client.on('message', msg => {
+
     if (msg.content.length == 69)
         msg.reply("That message was a nice length ;)");
-});
 
-client.on('message', msg => {
     if (msg.content.includes('??') && !msg.author.bot)
     {
         const s = getRandomInt(7);
@@ -47,18 +46,14 @@ client.on('message', msg => {
                 break;
         };
     }
-});
 
-client.on('message', async msg => {
     if (msg.content.toString() == '!!rayne')
     {
         const res = await fetch('https://www.mentalfloss.com/api/facts?page=2&limit=1&cb=0.3276683361034485').then(response => response.json());
         const message = "**Random fact:** " + res[0].fact; 
         msg.channel.send(message);
     }
-})
 
-client.on('message', async msg => {
     if (msg.content.toString() == '!!roulette')
     {
         switch (getRandomInt(5)){
@@ -70,4 +65,4 @@ client.on('message', async msg => {
                 break;
         }
     }
-})
+});
