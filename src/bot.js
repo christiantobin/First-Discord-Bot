@@ -16,7 +16,7 @@ client.on("ready", function() {
     client.user.setActivity('!!help.', {type: 'LISTENING'});
 });
 
-client.on('message', msg => {
+client.on('message', async msg => {
 
     var command = message.content.toLowerCase().slice(prefix.length).split(' ')[0];
 
