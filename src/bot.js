@@ -1,3 +1,4 @@
+
 const fetch = require('node-fetch');
 const eco = require("discord-economy");
 const dotenv = require('dotenv').config();
@@ -18,17 +19,36 @@ client.on("ready", function() {
 
 client.on('message', async msg => {
 
-    var command = message.content.toLowerCase().slice(prefix.length).split(' ')[0];
-
+    if (msg.author.bot) return;
+    /**
+     * Help command
+     *  Tells users what commands there are
+     *  __ is underline ** is bold 
+     */
     if (msg.content.toString() == '!!help'){
-        msg.reply("\n**Commands:**\n__!!rayne__ - returns a random fact.\n__!!roulette__ - a game.\nOr type a question followed by \'??\' for a response.")
+        msg.reply(`**Commands:**
+        __!!rayne__ - tells a random fact
+        __!!roulette__ - plays a simple game
+        __!!balance__ - check your balance
+        __!!coinflip <heads | tails> <bet amount>__ - play 50/50  
+        
+        Or type a question followed by '??' for a yes/no answer.
+        `)
     }
 
-
+    /**
+     * 69
+     *  Fun message is sent if prior message was 69 chars long
+     */
     if (msg.content.length == 69)
         msg.reply("That message was a nice length ;)");
 
-    if (msg.content.includes('??') && !msg.author.bot)
+    /**
+     * ??
+     *  Yes/no answers to questions
+     *  Switch statement helps with proabilty. (More yes'!)
+     */
+    if (msg.content.includes('??'))
     {
         const s = getRandomInt(7);
         switch(s){
@@ -47,6 +67,10 @@ client.on('message', async msg => {
         };
     }
 
+    /**
+     * Rayne
+     *  Tells user a random face
+     */
     if (msg.content.toString() == '!!rayne')
     {
         const res = await fetch('https://www.mentalfloss.com/api/facts?page=2&limit=1&cb=0.3276683361034485').then(response => response.json());
@@ -54,6 +78,10 @@ client.on('message', async msg => {
         msg.channel.send(message);
     }
 
+    /**
+     * Roulette
+     *  Play russain roulette
+     */
     if (msg.content.toString() == '!!roulette')
     {
         switch (getRandomInt(5)){
@@ -65,4 +93,57 @@ client.on('message', async msg => {
                 break;
         }
     }
+
+    /*************************************
+     *             Economy               *
+     *************************************/
+    
+    //Currency symbol: ₦
+    var args = msg.content.split(' ').slice(1);
+
+    /**
+     * Admin command
+     */
+    if (msg.content.includes('!!addNips'))
+    {
+        if(msg.member.user.id == 295035247718825984)
+            eco.AddToBalance(args[0], args[1])
+        else
+            msg.reply("No can do buckaroo.");
+    }
+
+    /**
+     * Balance
+     *  returns amount of nips someone has
+     */
+    if (msg.content == '!!balance' || msg.content == '!!bal') {
+        var output = await eco.FetchBalance(msg.author.id)
+        msg.reply(`Your balance is ₦${output.balance}.00 nips.`);
+    }
+
+    /**
+     * Coinflip
+     */
+    if (msg.content.includes('!!coinflip') || msg.content.includes('!!cf')) {
+ 
+    var flip = args[0] //Heads or Tails
+    var amount = args[1] //Coins to gamble
+ 
+    if (!flip || !['heads', 'tails'].includes(flip)) return msg.reply('Please specify the flip, either heads or tails!')
+    if (!amount) return msg.reply('Specify the amount you want to gamble!')
+ 
+    var output = await eco.FetchBalance(msg.author.id)
+    if (output.balance < amount) return msg.reply('You have fewer ₦ than the amount you want to gamble!')
+ 
+    var gamble = await eco.Coinflip(msg.author.id, flip, amount).catch(console.error);
+    msg.reply(`You ${gamble.output}! New balance: ₦${gamble.newbalance}.00`)
+ 
+  }
+
+  /**
+   * Blakcjack
+   */
+  if (msg.content.includes('!!blackjack')){
+      
+  }
 });
