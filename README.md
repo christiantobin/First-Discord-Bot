@@ -10,6 +10,6 @@ Add the bot to your server by clicking [here]()
 
 ## Future Improvement
 ### • !!blackjack
-- will let players play blackjack and sqlite will keep track of their earnings/losses
+- will let players play blackjack and sqlite will keep track of their earnings/losses (fake money)
 ### • !!stocks
-- will let players 'invest' in stocks and sqlite will keep track of their earnings/losses (fake money)
+- will let players 'invest' in stocks and sqlite will keep track of their earnings/losses
