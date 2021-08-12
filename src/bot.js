@@ -7,14 +7,14 @@ const { callbackify } = require('util');
 const client = new Discord.Client();
 
 function getRandomInt(max) {
-  return Math.floor(Math.random() * max);
+    return Math.floor(Math.random() * max);
 }
 
 client.login(process.env.DISCORDJS_BOT_TOKEN);
 
-client.on("ready", function() {
-	console.log("READY FOR ACTION!");
-    client.user.setActivity('!!help.', {type: 'LISTENING'});
+client.on("ready", function () {
+    console.log("READY FOR ACTION!");
+    client.user.setActivity('!!help.', { type: 'LISTENING' });
 });
 
 client.on('message', async msg => {
@@ -25,7 +25,7 @@ client.on('message', async msg => {
      *  Tells users what commands there are
      *  __ is underline ** is bold 
      */
-    if (msg.content.toString() == '!!help'){
+    if (msg.content.toString() == '!!help') {
         msg.reply(`**Commands:**
         __!!rayne__ - tells a random fact
         __!!roulette__ - plays a simple game
@@ -48,10 +48,9 @@ client.on('message', async msg => {
      *  Yes/no answers to questions
      *  Switch statement helps with proabilty. (More yes'!)
      */
-    if (msg.content.includes('??'))
-    {
+    if (msg.content.includes('??')) {
         const s = getRandomInt(7);
-        switch(s){
+        switch (s) {
             case 3:
                 msg.reply('Sure.');
                 break;
@@ -71,10 +70,9 @@ client.on('message', async msg => {
      * Rayne
      *  Tells user a random face
      */
-    if (msg.content.toString() == '!!rayne')
-    {
+    if (msg.content.toString() == '!!rayne') {
         const res = await fetch('https://www.mentalfloss.com/api/facts?page=2&limit=1&cb=0.3276683361034485').then(response => response.json());
-        const message = "**Random fact:** " + res[0].fact; 
+        const message = "**Random fact:** " + res[0].fact;
         msg.channel.send(message);
     }
 
@@ -82,9 +80,8 @@ client.on('message', async msg => {
      * Roulette
      *  Play russain roulette
      */
-    if (msg.content.toString() == '!!roulette')
-    {
-        switch (getRandomInt(5)){
+    if (msg.content.toString() == '!!roulette') {
+        switch (getRandomInt(5)) {
             case 0:
                 msg.reply('💥🔫 Sorry you lost.');
                 break;
@@ -97,16 +94,15 @@ client.on('message', async msg => {
     /*************************************
      *             Economy               *
      *************************************/
-    
+
     //Currency symbol: ₦
     var args = msg.content.split(' ').slice(1);
 
     /**
      * Admin command
      */
-    if (msg.content.includes('!!addNips'))
-    {
-        if(msg.member.user.id == 295035247718825984)
+    if (msg.content.includes('!!addNips')) {
+        if (msg.member.user.id == 295035247718825984)
             eco.AddToBalance(args[0], args[1])
         else
             msg.reply("No can do buckaroo.");
@@ -125,25 +121,25 @@ client.on('message', async msg => {
      * Coinflip
      */
     if (msg.content.includes('!!coinflip') || msg.content.includes('!!cf')) {
- 
-    var flip = args[0] //Heads or Tails
-    var amount = args[1] //Coins to gamble
- 
-    if (!flip || !['heads', 'tails'].includes(flip)) return msg.reply('Please specify the flip, either heads or tails!')
-    if (!amount) return msg.reply('Specify the amount you want to gamble!')
- 
-    var output = await eco.FetchBalance(msg.author.id)
-    if (output.balance < amount) return msg.reply('You have fewer ₦ than the amount you want to gamble!')
- 
-    var gamble = await eco.Coinflip(msg.author.id, flip, amount).catch(console.error);
-    msg.reply(`You ${gamble.output}! New balance: ₦${gamble.newbalance}.00`)
- 
-  }
 
-  /**
-   * Blakcjack
-   */
-  if (msg.content.includes('!!blackjack')){
-      
-  }
+        var flip = args[0] //Heads or Tails
+        var amount = args[1] //Coins to gamble
+
+        if (!flip || !['heads', 'tails'].includes(flip)) return msg.reply('Please specify the flip, either heads or tails!')
+        if (!amount) return msg.reply('Specify the amount you want to gamble!')
+
+        var output = await eco.FetchBalance(msg.author.id)
+        if (output.balance < amount) return msg.reply('You have fewer ₦ than the amount you want to gamble!')
+
+        var gamble = await eco.Coinflip(msg.author.id, flip, amount).catch(console.error);
+        msg.reply(`You ${gamble.output}! New balance: ₦${gamble.newbalance}.00`)
+
+    }
+
+    /**
+     * Blackjack
+     */
+    if (msg.content.includes('!!blackjack')) {
+
+    }
 });
