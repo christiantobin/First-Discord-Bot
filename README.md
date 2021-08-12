@@ -5,7 +5,7 @@ Add the bot to your server by clicking [here]()
 - tells you a random fact
 ### • !!roulette
 - plays russian roulette
-### Magic 8 ball
+### • Magic 8 ball
 - Type a yes/no question followed by '??'
 ### • !!balance
 - Check your balance
