@@ -8,7 +8,7 @@ Add the bot to your server by clicking [here]()
 ### - !!balance
 - Checks your balance
 ### - Magic 8 ball
-- Type a yes/no question followed by '??'
+- Instr.: Type a yes/no question followed by '??'
 
 
 ## Future Features/Improvements
