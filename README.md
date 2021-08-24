@@ -1,13 +1,13 @@
 # Tobin's Discord Bot
 Add the bot to your server by clicking [here]()
 ## Commands
-### • !!rayne
+### - !!rayne
 - Messages a random fact
-### • !!roulette
+### - !!roulette
 - Plays russian roulette
-### • Magic 8 ball
+### - Magic 8 ball
 - Type a yes/no question followed by '??'
-### • !!balance
+### - !!balance
 - Checks your balance
 
 ## Future Features/Improvements
