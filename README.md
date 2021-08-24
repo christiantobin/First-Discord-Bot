@@ -2,13 +2,13 @@
 Add the bot to your server by clicking [here]()
 ## Commands
 ### • !!rayne
-- tells you a random fact
+- Messages a random fact
 ### • !!roulette
-- plays russian roulette
+- Plays russian roulette
 ### • Magic 8 ball
 - Type a yes/no question followed by '??'
 ### • !!balance
-- Check your balance
+- Checks your balance
 
 ## Future Features/Improvements
 ### • !!blackjack 
