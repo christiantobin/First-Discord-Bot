@@ -10,7 +10,7 @@ Add the bot to your server by clicking [here]()
 ### • !!balance
 - Check your balance
 
-## Future Improvements
+## Future Features/Improvements
 ### • !!blackjack 
 - will let players play blackjack and sqlite will keep track of their earnings/losses (fake money)
 ### • !!stocks
