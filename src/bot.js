@@ -36,21 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+var discord_js_1 = require("discord.js");
 var fetch = require("node-fetch");
 var dotenv = require("dotenv").config();
 var eco = require("discord-economy");
-var discord_js_1 = require("discord.js");
-var client = new discord_js_1.Client();
+var discord = new discord_js_1.Client();
 function getRandomInt(max) {
     return Math.floor(Math.random() * max);
 }
-client.login(process.env.DISCORDJS_BOT_TOKEN);
-client.on("ready", function () {
+discord.login(process.env.DISCORDJS_BOT_TOKEN);
+discord.on("ready", function () {
     console.log("READY FOR ACTION!");
-    client.user.setActivity("!!help.", { type: "LISTENING" });
+    discord.user.setActivity("!!help.", { type: "LISTENING" });
 });
-client.on("message", function (msg) { return __awaiter(void 0, void 0, void 0, function () {
-    var s, res, message, args, output, flip, amount, output, gamble, id, un;
+discord.on("message", function (msg) { return __awaiter(void 0, void 0, void 0, function () {
+    var s, res, message, args, output, flip, amount, output, gamble, list;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -178,13 +178,23 @@ client.on("message", function (msg) { return __awaiter(void 0, void 0, void 0, f
                             break;
                     }
                 }
-                if (!msg.content.includes("!!leaderboard")) return [3 /*break*/, 9];
-                id = args[0];
-                return [4 /*yield*/, client.users.fetch(id)];
-            case 8:
-                un = (_a.sent()).username;
-                _a.label = 9;
-            case 9: return [2 /*return*/];
+                if (msg.content.includes("!!leaderboard")) {
+                    list = leaderboard();
+                    console.log(list);
+                    // msg.channel.send(`**Leaderboard**:
+                    // -----------------
+                    // 1. ${(await discord.users.fetch(list[0].userID)).username}:\t₦${
+                    //     list[0].balance
+                    // }.00
+                    // 2. ${(await discord.users.fetch(list[1].userID)).username}:\t₦${
+                    //     list[1].balance
+                    // }.00
+                    // 3. ${(await discord.users.fetch(list[2].userID)).username}:\t₦${
+                    //     list[2].balance
+                    // }.00
+                    // -----------------`);
+                }
+                return [2 /*return*/];
         }
     });
 }); });

@@ -1,23 +1,23 @@
+import { Client } from "discord.js";
+
 const fetch = require("node-fetch");
 const dotenv = require("dotenv").config();
 const eco = require("discord-economy");
-import { Client } from "discord.js";
-import { leaderboard } from "./service/sqlite.service";
 
-const client = new Client();
+const discord = new Client();
 
 function getRandomInt(max: any) {
     return Math.floor(Math.random() * max);
 }
 
-client.login(process.env.DISCORDJS_BOT_TOKEN);
+discord.login(process.env.DISCORDJS_BOT_TOKEN);
 
-client.on("ready", function () {
+discord.on("ready", function () {
     console.log("READY FOR ACTION!");
-    client.user!.setActivity("!!help.", { type: "LISTENING" });
+    discord.user!.setActivity("!!help.", { type: "LISTENING" });
 });
 
-client.on("message", async (msg) => {
+discord.on("message", async (msg) => {
     if (msg.author.bot) return;
     /**
      * Help command
@@ -176,7 +176,19 @@ client.on("message", async (msg) => {
     }
 
     if (msg.content.includes("!!leaderboard")) {
-        let id = args[0];
-        let un = (await client.users.fetch(id)).username;
+        let list = leaderboard();
+        console.log(list);
+        // msg.channel.send(`**Leaderboard**:
+        // -----------------
+        // 1. ${(await discord.users.fetch(list[0].userID)).username}:\t₦${
+        //     list[0].balance
+        // }.00
+        // 2. ${(await discord.users.fetch(list[1].userID)).username}:\t₦${
+        //     list[1].balance
+        // }.00
+        // 3. ${(await discord.users.fetch(list[2].userID)).username}:\t₦${
+        //     list[2].balance
+        // }.00
+        // -----------------`);
     }
 });
