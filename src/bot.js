@@ -5,9 +5,11 @@ const db = require("better-sqlite3")("database.sqlite", {
 const fetch = require("node-fetch");
 const dotenv = require("dotenv").config();
 const eco = require("discord-economy");
+const Stock = require("stocks.js");
 
 var discord = new client.Client();
 discord.login(process.env.DISCORDJS_BOT_TOKEN);
+var stocks = new Stock(process.env.STOCKJS_API_KEY);
 
 discord.on("ready", function () {
     console.log("READY FOR ACTION!");
@@ -174,19 +176,12 @@ discord.on("message", async (msg) => {
 
     if (msg.content.includes("!!leaderboard")) {
         let list = leaderboard();
-        console.log(list);
-        // msg.channel.send(`**Leaderboard**:
-        // -----------------
-        // 1. ${(await discord.users.fetch(list[0].userID)).username}:\t₦${
-        //     list[0].balance
-        // }.00
-        // 2. ${(await discord.users.fetch(list[1].userID)).username}:\t₦${
-        //     list[1].balance
-        // }.00
-        // 3. ${(await discord.users.fetch(list[2].userID)).username}:\t₦${
-        //     list[2].balance
-        // }.00
-        // -----------------`);
+        msg.channel.send(`**Leaderboard**:
+----------------------------------------
+1. ${(await discord.users.fetch(list[0].userID)).username}:\t₦${list[0].balance}
+2. ${(await discord.users.fetch(list[1].userID)).username}:\t₦${list[1].balance}
+3. ${(await discord.users.fetch(list[2].userID)).username}:\t₦${list[2].balance}
+----------------------------------------`);
     }
 });
 
@@ -199,7 +194,6 @@ function leaderboard() {
     );
     var list = [];
     for (const row of list_stmt.iterate()) {
-        console.log("in loop");
         list.push({
             userID: String(row.userID),
             balance: String(row.balance),
@@ -207,3 +201,13 @@ function leaderboard() {
     }
     return list;
 }
+
+async function getStockPrice(symbol) {
+    var res = await stocks.timeSeries({
+        symbol: symbol,
+        interval: "1min",
+        amount: 1,
+    });
+    console.log(res);
+}
+getStockPrice("TSLA");
