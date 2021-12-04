@@ -28,7 +28,10 @@ try {
         __!!roulette__ - plays a simple game (Earn +100 on win, -300 on lose)
         __!!balance__ - check your balance
         __!!coinflip <heads | tails> <bet amount>__ - play 50/50  
-        
+        __!!price <stock>__ - Search price of a stock by its symbol
+        __!!buy <stock> <amount?>__ - Buy shares of stock with Nips
+        __!!sell <stock> <shares>__ - Sell your share(s) of stock for Nips
+
         Or type a question followed by '??' for a yes/no answer.
         `);
             return;
@@ -237,7 +240,13 @@ try {
                 );
                 eco.SubtractFromBalance(msg.author.id, price * Number(amount));
                 msg.reply(
-                    "You bought " + amount + " share(s) of " + symbol + "!"
+                    "You bought " +
+                        amount +
+                        " share(s) of " +
+                        symbol +
+                        " for ₦" +
+                        price * Number(amount) +
+                        "!"
                 );
             } else {
                 msg.reply("You do not have enough funds!");
