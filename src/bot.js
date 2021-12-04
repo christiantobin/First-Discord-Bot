@@ -153,7 +153,7 @@ try {
                 .Coinflip(msg.author.id, flip, amount)
                 .catch(console.error);
             msg.reply(
-                `You ${gamble.output}! New balance: ₦${gamble.newbalance}.00`
+                `You ${gamble.output}! New balance: ₦${gamble.newbalance}`
             );
             return;
         }
