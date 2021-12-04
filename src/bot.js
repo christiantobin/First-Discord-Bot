@@ -224,8 +224,10 @@ try {
                 return;
             }
             let price = price_in_dollars * 100;
-            //console.log(msg.author.id);
-            if (eco.FetchBalance(msg.author.id) >= price * amount) {
+            if (
+                (await eco.FetchBalance(msg.author.id)).balance >=
+                price * amount
+            ) {
                 updateStockDatabase(
                     msg.author.id,
                     "buy",
@@ -233,7 +235,7 @@ try {
                     amount,
                     symbol
                 );
-                eco.SubtractFromBalance(msg.author.id, price * amount);
+                eco.SubtractFromBalance(msg.author.id, price * Number(amount));
                 msg.reply(
                     "You bought " + amount + " share(s) of " + symbol + "!"
                 );
@@ -246,20 +248,33 @@ try {
             let symbol = args[0].toLocaleLowerCase();
             var amount = 1;
             if (args[1]) amount = args[1];
-            let price_in_dollars = getStockPrice(symbol);
+            let price_in_dollars = await getStockPrice(symbol);
             if (price_in_dollars == undefined) {
                 msg.reply('Cannot find symbol "' + symbol + '"');
                 return;
             }
             let price = price_in_dollars * 100;
-            updateStockDatabase(msd.author.id, "sell", price, amount, symbol);
-            if (updateStockDatabase == 0)
+            let profit = updateStockDatabase(
+                msg.author.id,
+                "sell",
+                price,
+                amount,
+                symbol
+            );
+            if (profit == "Invalid")
                 msg.reply(
-                    "Invalid: you do not own " + shares + " of " + symbol + "."
+                    "Invalid: you do not own " +
+                        String(amount) +
+                        " share(s) of " +
+                        symbol +
+                        "."
                 );
             else {
-                eco.AddToBalance(msg.author.id, price * amount);
-                msg.reply("Sold! Type !!bal to check your balance.");
+                await eco.AddToBalance(msg.author.id, price * Number(amount));
+                if (profit > 0)
+                    msg.reply("Sold for a net GAIN of ₦" + profit + "!");
+                else if (profit == 0) msg.reply("Sold and BROKE EVEN!");
+                else msg.reply("Sold for a net LOSS of " + profit + " Nips.");
             }
         }
     });
@@ -348,25 +363,29 @@ function updateStockDatabase(userID, method, price, shares, symbol) {
                 .run(userID, symbol, Date.now(), Date.now(), price, shares);
         }
     } else if (method == "sell") {
+        var profit = 0;
         var valid = 0;
         stmt = db
             .prepare("SELECT * FROM stock_holders WHERE eco_id = ?")
             .all(userID)
             .forEach((row) => {
                 if (row.symbol == symbol)
-                    if (row.shares >= amount) {
+                    if (row.shares >= shares) {
                         valid = 1;
                         stmt = db
                             .prepare(
                                 "UPDATE stock_holders SET shares = ?, updated_at = ? WHERE id = ?"
                             )
                             .run(
-                                Number(row.shares) + Number(shares),
+                                Number(row.shares) - Number(shares),
                                 Date.now(),
                                 row.id
                             );
                     }
             });
-        if (valid == 0) return 0;
+        if (valid == 0) return "Invalid";
+        else {
+            return profit;
+        }
     }
 }
