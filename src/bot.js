@@ -190,19 +190,19 @@ discord.on("message", async (msg) => {
         if (args[1]) amount = args[1];
         let price_in_dollars = await getStockPrice(symbol);
         console.log(price_in_dollars);
-        if (price_in_dollars == undefined)
+        if (price_in_dollars == undefined) {
             msg.reply('Cannot find symbol "' + symbol + '"');
-        else {
-            let price = price_in_dollars * 100;
-            msg.reply(
-                "The price of " +
-                    String(amount) +
-                    " share(s) of " +
-                    symbol +
-                    " is ₦" +
-                    String(price)
-            );
+            return;
         }
+        let price = price_in_dollars * 100;
+        msg.reply(
+            "The price of " +
+                String(amount) +
+                " share(s) of " +
+                symbol +
+                " is ₦" +
+                String(price)
+        );
         return;
     }
 
@@ -211,6 +211,10 @@ discord.on("message", async (msg) => {
         var amount = 1;
         if (args[1]) amount = args[1];
         let price_in_dollars = await getStockPrice(symbol);
+        if (price_in_dollars == undefined) {
+            msg.reply('Cannot find symbol "' + symbol + '"');
+            return;
+        }
         let price = price_in_dollars * 100;
         //console.log(msg.author.id);
         updateStockDatabase(msg.author.id, "buy", price, amount, symbol);
@@ -223,6 +227,10 @@ discord.on("message", async (msg) => {
         var amount = 1;
         if (args[1]) amount = args[1];
         let price_in_dollars = getStockPrice(symbol);
+        if (price_in_dollars == undefined) {
+            msg.reply('Cannot find symbol "' + symbol + '"');
+            return;
+        }
         let price = price_in_dollars * 100;
         updateStockDatabase(msd.author.id, "sell", price, amount, symbol);
         eco.AddToBalance(msg.author.id, price * amount);
@@ -265,7 +273,9 @@ async function getStockPrice(symbol) {
                     console.log(data);
                     try {
                         resolve(data["Global Quote"]["05. price"]);
-                    } catch {}
+                    } catch {
+                        return undefined;
+                    }
                 }
             }
         );
@@ -285,22 +295,28 @@ function getShareCount(userID, symbol) {
 
 function updateStockDatabase(userID, method, price, shares, symbol) {
     if (method == "buy") {
+        var flag = 0;
         getShareCount(userID, symbol).forEach((row) => {
             if (symbol == row.symbol) {
                 stmt = db
                     .prepare(
-                        "UPDATE stock_holders SET shares = ?, updated_at = ?"
+                        "UPDATE stock_holders SET shares = ?, updated_at = ? WHERE id = ?"
                     )
-                    .run(Number(row.shares) + Number(shares), Date.now());
-                return;
+                    .run(
+                        Number(row.shares) + Number(shares),
+                        Date.now(),
+                        row.id
+                    );
+                flag = 1;
             }
         });
-        stmt = db
-            .prepare(
-                "INSERT INTO stock_holders (eco_id, symbol, bought_at, updated_at, original_price, shares) VALUES (?,?,?,?,?,?)"
-            )
-            .run(userID, symbol, Date.now(), Date.now(), price, shares);
+        if (flag == 0) {
+            stmt = db
+                .prepare(
+                    "INSERT INTO stock_holders (eco_id, symbol, bought_at, updated_at, original_price, shares) VALUES (?,?,?,?,?,?)"
+                )
+                .run(userID, symbol, Date.now(), Date.now(), price, shares);
+        }
     } else if (method == "sell") {
-        var stmt = db.prepare("UPDATE");
     }
 }
