@@ -5,11 +5,10 @@ const db = require("better-sqlite3")("database.sqlite", {
 const fetch = require("node-fetch");
 const dotenv = require("dotenv").config();
 const eco = require("discord-economy");
-const Stock = require("stocks.js");
+var request = require("request");
 
 var discord = new client.Client();
 discord.login(process.env.DISCORDJS_BOT_TOKEN);
-var stocks = new Stock(process.env.STOCKJS_API_KEY);
 
 discord.on("ready", function () {
     console.log("READY FOR ACTION!");
@@ -120,7 +119,7 @@ discord.on("message", async (msg) => {
      */
     if (msg.content == "!!balance" || msg.content == "!!bal") {
         var output = await eco.FetchBalance(msg.author.id);
-        msg.reply(`Your balance is ₦${output.balance}.00 nips.`);
+        msg.reply(`Your balance is ₦${output.balance} nips.`);
         return;
     }
 
@@ -182,6 +181,51 @@ discord.on("message", async (msg) => {
 2. ${(await discord.users.fetch(list[1].userID)).username}:\t₦${list[1].balance}
 3. ${(await discord.users.fetch(list[2].userID)).username}:\t₦${list[2].balance}
 ----------------------------------------`);
+        return;
+    }
+
+    if (msg.content.includes("!!price")) {
+        let symbol = args[0];
+        var amount = 1;
+        if (args[1]) amount = args[1];
+        let price_in_dollars = await getStockPrice(symbol);
+        console.log(price_in_dollars);
+        if (price_in_dollars == undefined)
+            msg.reply('Cannot find symbol "' + symbol + '"');
+        else {
+            let price = price_in_dollars * 100;
+            msg.reply(
+                "The price of " +
+                    String(amount) +
+                    " share(s) of " +
+                    symbol +
+                    " is ₦" +
+                    String(price)
+            );
+        }
+        return;
+    }
+
+    if (msg.content.includes("!!buy")) {
+        let symbol = args[0].toLocaleLowerCase();
+        var amount = 1;
+        if (args[1]) amount = args[1];
+        let price_in_dollars = await getStockPrice(symbol);
+        let price = price_in_dollars * 100;
+        //console.log(msg.author.id);
+        updateStockDatabase(msg.author.id, "buy", price, amount, symbol);
+        eco.SubtractFromBalance(msg.author.id, price * amount);
+        msg.reply("You bought " + amount + " share(s) of " + symbol + "!");
+    }
+
+    if (msg.content.includes("!!sell")) {
+        let symbol = args[0].toLocaleLowerCase();
+        var amount = 1;
+        if (args[1]) amount = args[1];
+        let price_in_dollars = getStockPrice(symbol);
+        let price = price_in_dollars * 100;
+        updateStockDatabase(msd.author.id, "sell", price, amount, symbol);
+        eco.AddToBalance(msg.author.id, price * amount);
     }
 });
 
@@ -203,11 +247,60 @@ function leaderboard() {
 }
 
 async function getStockPrice(symbol) {
-    var res = await stocks.timeSeries({
-        symbol: symbol,
-        interval: "1min",
-        amount: 1,
+    var url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${process.env.API_KEY}`;
+    return new Promise((resolve) => {
+        request.get(
+            {
+                url: url,
+                json: true,
+                headers: { "User-Agent": "request" },
+            },
+            (err, res, data) => {
+                if (err) {
+                    console.log("Error:", err);
+                } else if (res.statusCode !== 200) {
+                    console.log("Status:", res.statusCode);
+                } else {
+                    // data is successfully parsed as a JSON object:
+                    console.log(data);
+                    try {
+                        resolve(data["Global Quote"]["05. price"]);
+                    } catch {}
+                }
+            }
+        );
     });
-    console.log(res);
 }
-getStockPrice("TSLA");
+
+function getShareCount(userID, symbol) {
+    try {
+        var stmt = db.prepare(
+            "SELECT * from stock_holders WHERE eco_id = ? AND symbol = ?"
+        );
+        return stmt.all(userID, symbol);
+    } catch {
+        return 0;
+    }
+}
+
+function updateStockDatabase(userID, method, price, shares, symbol) {
+    if (method == "buy") {
+        getShareCount(userID, symbol).forEach((row) => {
+            if (symbol == row.symbol) {
+                stmt = db
+                    .prepare(
+                        "UPDATE stock_holders SET shares = ?, updated_at = ?"
+                    )
+                    .run(Number(row.shares) + Number(shares), Date.now());
+                return;
+            }
+        });
+        stmt = db
+            .prepare(
+                "INSERT INTO stock_holders (eco_id, symbol, bought_at, updated_at, original_price, shares) VALUES (?,?,?,?,?,?)"
+            )
+            .run(userID, symbol, Date.now(), Date.now(), price, shares);
+    } else if (method == "sell") {
+        var stmt = db.prepare("UPDATE");
+    }
+}
