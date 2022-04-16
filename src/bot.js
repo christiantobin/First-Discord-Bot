@@ -76,7 +76,7 @@ try {
          */
         if (msg.content.toString() == "!!rayne") {
             const res = await fetch(
-                "https://www.mentalfloss.com/api/facts?page=2&limit=1&cb=0.3276683361034485"
+                "https://www.mentalfloss.com/api/facts?page=2&limit=1&cb=0.3276683361034485" //dead link :,c
             ).then((response) => response.json());
             const message = "**Random fact:** " + res[0].fact;
             msg.channel.send(message);
@@ -396,5 +396,9 @@ function updateStockDatabase(userID, method, price, shares, symbol) {
         else {
             return profit;
         }
+    }
+
+    if (msg.content.includes("!!dice") || msg.content.includes("!!roll")) {
+        msg.reply("You rolled a " + (getRandomInt(5) + 1).toString() + ".");
     }
 }
