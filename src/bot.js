@@ -286,6 +286,10 @@ try {
                 else msg.reply("Sold for a net LOSS of " + profit + " Nips.");
             }
         }
+
+        if (msg.content.includes("!!dice") || msg.content.includes("!!roll")) {
+            msg.reply("You rolled a " + (getRandomInt(5) + 1).toString() + ".");
+        }
     });
 } catch (err) {
     discord.user.send(String(err));
@@ -396,9 +400,5 @@ function updateStockDatabase(userID, method, price, shares, symbol) {
         else {
             return profit;
         }
-    }
-
-    if (msg.content.includes("!!dice") || msg.content.includes("!!roll")) {
-        msg.reply("You rolled a " + (getRandomInt(5) + 1).toString() + ".");
     }
 }
